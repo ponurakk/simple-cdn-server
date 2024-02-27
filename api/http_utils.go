@@ -1,10 +1,10 @@
-package main
+package api
 
 import "github.com/gin-gonic/gin"
 
 const template = "index.html"
 
-func render(code int, message any, context *gin.Context) {
+func Render(code int, message any, context *gin.Context) {
 	if message == nil {
 		context.HTML(code, template, nil)
 		return
@@ -13,10 +13,12 @@ func render(code int, message any, context *gin.Context) {
 		"message": message,
 	})
 }
-func abort(code int, message string, context *gin.Context) {
+
+func Abort(code int, message string, context *gin.Context) {
 	context.AbortWithStatusJSON(code, gin.H{"message": message})
 }
-func getPath(file string, context *gin.Context) string {
+
+func GetPath(file string, context *gin.Context) string {
 	scheme := "http"
 	if context.Request.TLS != nil {
 		scheme = "https"
