@@ -1,10 +1,10 @@
-# simple-cdn-server
+# Simple CDN Server
 
 # Setup
 1. Rename **config.json.example** to **config.json**
-2. Set your token and address in config.json file
-3. Create **/files** directory
-4. Execute **go build cdn-server**
+2. Set your token and address in **config.json** file
+3. Execute `go build`
+4. Run `./cdn-server`
 
 # Endpoints
 Upload file:
@@ -14,7 +14,7 @@ POST /
 
 Find file:
 ```http
-GET /files/uuid.ext
+GET /files/{generated combination}.{extension}
 ```
 
-#### All uploaded files goes to /files directory
+#### All uploaded files go into the /files directory
