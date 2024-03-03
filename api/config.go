@@ -6,8 +6,9 @@ import (
 )
 
 type Config struct {
-	Token string `json:"token"`
-	Port  string `json:"port"`
+	Token  string `json:"token"`
+	Port   string `json:"port"`
+	JwtKey string `json:"jwtkey"`
 }
 
 func ReadConfig() (Config, error) {

@@ -1,22 +1,32 @@
 <html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>CDN</title>
-    <style>
-        form * {
-            display: block;
-            margin: 10px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <title>CDN</title>
+  <style>
+    form * {
+      display: block;
+      margin: 10px;
+    }
+  </style>
 </head>
+
 <body>
-    <form action="/" method="post" enctype="multipart/form-data">
-        <p>{{ .message }}</p>
-        <input type="file" name="file">
-        <input type="text" placeholder="Token" name="token">
-        <button type="submit">Upload</button>
-    </form>
+  <p id="message">{{ .message }}</p>
+
+  <form hx-post="/login" hx-swap="outerHTML" hx-trigger="submit">
+    <input type="text" placeholder="Token" name="token">
+    <button type="submit">Login</button>
+  </form>
+
+  <form hx-post="/" hx-target="#message" enctype="multipart/form-data">
+    <input type="file" name="file">
+    <button type="submit">Upload</button>
+  </form>
 </body>
+
 </html>

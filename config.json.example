@@ -1,4 +1,5 @@
 {
   "token": "YOUR_TOKEN",
-  "bind": ":8080"
+  "jwtkey": "RANDOM_KEY",
+  "port": "8080"
 }
