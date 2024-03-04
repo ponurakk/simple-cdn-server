@@ -5,18 +5,24 @@
   <meta name="viewport"
     content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
   <title>CDN</title>
   <style>
-    table {
-      margin: auto;
+    body {
+      background-color: #1a1a1a;
+      color: white;
     }
 
-    table,
+    table {
+      margin: auto;
+      border-collapse: collapse;
+      border-radius: 10px;
+      border-style: hidden;
+      box-shadow: 0 0 0 1px #fff;
+    }
+
     th,
     td {
-      border: 1px solid black;
-      border-collapse: collapse;
+      border: 1px solid white;
       padding: 10px;
     }
   </style>
@@ -35,5 +41,7 @@
     </tbody>
   </table>
 </body>
+
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
 </html>
