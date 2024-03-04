@@ -1,0 +1,39 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <title>CDN</title>
+  <style>
+    table {
+      margin: auto;
+    }
+
+    table,
+    th,
+    td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <table>
+    <thead>
+      <th>File Name</th>
+      <th>Original</th>
+      <th>Size</th>
+      <th></th>
+    </thead>
+    <tbody>
+      {{ .files }}
+    </tbody>
+  </table>
+</body>
+
+</html>

@@ -2,14 +2,12 @@ package api
 
 import "github.com/gin-gonic/gin"
 
-const template = "index.html"
-
 func Render(code int, message any, context *gin.Context) {
 	if message == nil {
-		context.HTML(code, template, nil)
+		context.HTML(code, "index.html", nil)
 		return
 	}
-	context.HTML(code, template, gin.H{
+	context.HTML(code, "index.html", gin.H{
 		"message": message,
 	})
 }
