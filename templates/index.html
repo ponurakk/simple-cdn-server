@@ -18,10 +18,7 @@
 <body>
   <p id="message">{{ .message }}</p>
 
-  <form hx-post="/login" hx-swap="outerHTML" hx-trigger="submit">
-    <input type="text" placeholder="Token" name="token">
-    <button type="submit">Login</button>
-  </form>
+  {{ .form }}
 
   <form hx-post="/" hx-target="#message" enctype="multipart/form-data">
     <input type="file" name="file">

@@ -17,6 +17,13 @@ type UploadRequest struct {
 	Token string `form:"token"`
 }
 
+func ValidateToken(config Config, tokenString string) (*jwt.Token, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(config.JwtKey), nil
+	})
+	return token, err
+}
+
 func Login(config Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var creds UploadRequest
@@ -78,9 +85,7 @@ func AuthMiddleware(config Config) gin.HandlerFunc {
 			return
 		}
 
-		token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-			return []byte(config.JwtKey), nil
-		})
+		token, err := ValidateToken(config, tokenString)
 
 		if err != nil || !token.Valid {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
