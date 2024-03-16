@@ -75,11 +75,11 @@ func FilesList(ctx *gin.Context) {
 		noDot := strings.Replace(file.FileName, ".", "", -1)
 
 		html := fmt.Sprintf(`
-      <tr id="%s">
+      <tr id="i%s">
         <td>%s</td>
         <td>%s</td>
         <td>%s</td>
-        <td><button hx-delete="/files/%s" hx-target="#%s">Delete</button></td>
+        <td><button hx-delete="/files/%s" hx-target="#i%s">Delete</button></td>
       </tr>
       `, noDot, file.FileName, file.Original, formatBytes(file.Size), file.FileName, noDot)
 		templateList += html
