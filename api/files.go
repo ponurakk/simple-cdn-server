@@ -49,7 +49,7 @@ func FileSend(ctx *gin.Context) {
 
 	file, err := ctx.FormFile("file")
 	if err != nil {
-		Render(http.StatusBadRequest, gin.H{"message": "Please select a file"}, ctx)
+		Abort(http.StatusBadRequest, "Please select a file", ctx)
 		return
 	}
 
@@ -63,7 +63,7 @@ func FileSend(ctx *gin.Context) {
 
 	AppendToJson(ctx, file, newFileName)
 
-	Abort(http.StatusAccepted, "File has been uploaded and available at "+GetPath(newFileName, ctx), ctx)
+	Abort(http.StatusAccepted, "File has been uploaded and available at "+GetUrlPath(newFileName, ctx), ctx)
 	return
 }
 
