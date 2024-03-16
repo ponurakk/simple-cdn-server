@@ -1,13 +1,12 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
 	"html/template"
-	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -41,49 +40,6 @@ func formatBytes(bytes int64) string {
 	return fmt.Sprintf("%.2f%s", size, unit)
 }
 
-func saveJson(ctx *gin.Context, file *multipart.FileHeader, newFileName string) {
-	jsonData, err := os.ReadFile("info.json")
-	if err != nil {
-		Abort(http.StatusInternalServerError, "Error reading JSON file", ctx)
-	}
-
-	var dataArray []FileInfo
-
-	if err := json.Unmarshal(jsonData, &dataArray); err != nil {
-		Abort(http.StatusInternalServerError, "Error parsing JSON file", ctx)
-	}
-
-	newFile := FileInfo{
-		FileName: newFileName,
-		Original: file.Filename,
-		Size:     file.Size,
-	}
-
-	dataArray = append(dataArray, newFile)
-
-	updatedJSON, err := json.MarshalIndent(dataArray, "", "  ")
-	if err != nil {
-		Abort(http.StatusInternalServerError, "Error parsing JSON file", ctx)
-	}
-
-	if err := os.WriteFile("info.json", updatedJSON, 0644); err != nil {
-		Abort(http.StatusInternalServerError, "Error saving JSON file", ctx)
-	}
-}
-
-func readJson(ctx *gin.Context) []FileInfo {
-	jsonData, err := os.ReadFile("info.json")
-	if err != nil {
-		Abort(http.StatusInternalServerError, "Error reading JSON file", ctx)
-	}
-
-	var data []FileInfo
-	if err := json.Unmarshal(jsonData, &data); err != nil {
-		Abort(http.StatusInternalServerError, "Error parsing json", ctx)
-	}
-	return data
-}
-
 func FileSend(ctx *gin.Context) {
 	var req UploadRequest
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -105,27 +61,57 @@ func FileSend(ctx *gin.Context) {
 		return
 	}
 
-	saveJson(ctx, file, newFileName)
+	AppendToJson(ctx, file, newFileName)
 
 	Abort(http.StatusAccepted, "File has been uploaded and available at "+GetPath(newFileName, ctx), ctx)
 	return
 }
 
 func FilesList(ctx *gin.Context) {
-	json := readJson(ctx)
+	json := ReadJson(ctx)
 
 	var templateList string
 	for _, file := range json {
+		noDot := strings.Replace(file.FileName, ".", "", -1)
+
 		html := fmt.Sprintf(`
-      <tr>
+      <tr id="%s">
         <td>%s</td>
         <td>%s</td>
         <td>%s</td>
-        <td><button>Delete</button></td>
+        <td><button hx-post="/delete/%s" hx-target="#%s">Delete</button></td>
       </tr>
-      `, file.FileName, file.Original, formatBytes(file.Size))
+      `, noDot, file.FileName, file.Original, formatBytes(file.Size), file.FileName, noDot)
 		templateList += html
 	}
 
 	ctx.HTML(http.StatusOK, "files.html", gin.H{"files": template.HTML(templateList)})
+}
+
+func FileDelete(ctx *gin.Context) {
+	file := ctx.Param("file")
+	data := ReadJson(ctx)
+
+	var indexToRemove int = -1
+	for i, data := range data {
+		if data.FileName == file {
+			indexToRemove = i
+			break
+		}
+	}
+
+	if indexToRemove != -1 {
+		data = append(data[:indexToRemove], data[indexToRemove+1:]...)
+	} else {
+		fmt.Println("Object not found in the JSON array.")
+		return
+	}
+
+	SaveJson(ctx, data)
+
+	err := os.Remove("files/" + file)
+	if err != nil {
+		fmt.Println("Error saving file:", err)
+		return
+	}
 }
