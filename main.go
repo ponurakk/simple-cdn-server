@@ -59,7 +59,7 @@ func main() {
 		authenticated.POST("/logout", api.Logout)
 		authenticated.POST("/", api.FileSend)
 		authenticated.GET("/list", api.FilesList)
-		authenticated.POST("/delete/:file", api.FileDelete)
+		authenticated.DELETE("/files/:file", api.FileDelete)
 	}
 
 	router.Run(":" + config.Port)

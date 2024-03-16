@@ -17,4 +17,9 @@ Find file:
 GET /files/{generated combination}.{extension}
 ```
 
+Remove file:
+```http
+DELETE /files/{generated combination}.{extension}
+```
+
 #### All uploaded files go into the /files directory

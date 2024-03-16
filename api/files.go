@@ -79,7 +79,7 @@ func FilesList(ctx *gin.Context) {
         <td>%s</td>
         <td>%s</td>
         <td>%s</td>
-        <td><button hx-post="/delete/%s" hx-target="#%s">Delete</button></td>
+        <td><button hx-delete="/files/%s" hx-target="#%s">Delete</button></td>
       </tr>
       `, noDot, file.FileName, file.Original, formatBytes(file.Size), file.FileName, noDot)
 		templateList += html
