@@ -90,28 +90,12 @@ func FilesList(ctx *gin.Context) {
 
 func FileDelete(ctx *gin.Context) {
 	file := ctx.Param("file")
-	data := ReadJson(ctx)
 
-	var indexToRemove int = -1
-	for i, data := range data {
-		if data.FileName == file {
-			indexToRemove = i
-			break
-		}
-	}
-
-	if indexToRemove != -1 {
-		data = append(data[:indexToRemove], data[indexToRemove+1:]...)
-	} else {
-		fmt.Println("Object not found in the JSON array.")
-		return
-	}
-
-	SaveJson(ctx, data)
+	RemoveFromJson(ctx, file)
 
 	err := os.Remove("files/" + file)
 	if err != nil {
-		fmt.Println("Error saving file:", err)
+		Abort(http.StatusInternalServerError, "Error saving file", ctx)
 		return
 	}
 }

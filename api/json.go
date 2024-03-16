@@ -45,3 +45,24 @@ func AppendToJson(ctx *gin.Context, file *multipart.FileHeader, newFileName stri
 	data = append(data, newFile)
 	SaveJson(ctx, data)
 }
+
+func RemoveFromJson(ctx *gin.Context, fileName string) {
+	data := ReadJson(ctx)
+
+	var indexToRemove int = -1
+	for i, data := range data {
+		if data.FileName == fileName {
+			indexToRemove = i
+			break
+		}
+	}
+
+	if indexToRemove != -1 {
+		data = append(data[:indexToRemove], data[indexToRemove+1:]...)
+	} else {
+		Abort(http.StatusInternalServerError, "Object not found in the JSON array.", ctx)
+		return
+	}
+
+	SaveJson(ctx, data)
+}
