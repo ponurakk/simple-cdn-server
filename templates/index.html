@@ -16,6 +16,14 @@
       display: block;
       margin: 10px;
     }
+
+    button,
+    #progressDiv,
+    progress,
+    progress+span {
+      display: inline-block;
+      vertical-align: middle;
+    }
   </style>
 </head>
 
@@ -28,12 +36,72 @@
 
   {{ .form }}
 
-  <form hx-post="/" hx-target="#message" enctype="multipart/form-data">
-    <input type="file" name="file">
+  <form enctype="multipart/form-data" id="uploadForm">
+    <input type="file" name="file" id="fileInput">
     <button type="submit">Upload</button>
+    <div id="progressDiv">
+      <progress id="progressBar" value="0" max="100"></progress>
+      <span id="progressText">0%</span>
+    </div>
   </form>
 </body>
 
 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+<script>
+  document.getElementById("uploadForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const fileInput = document.getElementById("fileInput");
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const messageDiv = document.getElementById("message");
+
+    if (fileInput.files.length === 0) {
+      alert("Please select a file.");
+      return;
+    }
+
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState == XMLHttpRequest.DONE) {
+        messageDiv.innerHTML += `${file.name}: ${JSON.parse(xhr.responseText).message}<br>`;
+      }
+    }
+
+    xhr.upload.addEventListener("progress", (event) => {
+      if (event.lengthComputable) {
+        const percentComplete = (event.loaded / event.total) * 100;
+        progressBar.value = percentComplete;
+        progressBar.style.display = "inline-block";
+        progressText.innerHTML = `${Math.round(percentComplete)}%`;
+      }
+    });
+
+    xhr.upload.addEventListener("load", (event) => {
+      console.log("Upload complete!");
+      progressBar.value = 0;
+      progressText.innerHTML = "0%";
+      // Trigger HTMX swap to update the target element
+      htmx.trigger("#message", "htmx:afterSwap");
+    });
+
+    xhr.upload.addEventListener("error", (event) => {
+      alert("Upload failed.");
+    });
+
+    xhr.upload.addEventListener("abort", () => {
+      alert("Upload canceled.");
+    });
+
+    xhr.open("POST", "/");
+    xhr.send(formData);
+  });
+</script>
 
 </html>

@@ -40,6 +40,26 @@ func formatBytes(bytes int64) string {
 	return fmt.Sprintf("%.2f%s", size, unit)
 }
 
+func FileGet(ctx *gin.Context) {
+	file := ctx.Param("file")
+
+	if _, err := os.Stat("./files/" + file); err == nil {
+		json := ReadJson(ctx)
+		var original string
+		for _, json_file := range json {
+			if json_file.FileName == file {
+				original = json_file.Original
+				break
+			}
+		}
+
+		ctx.Header("Content-Disposition", `attachment; filename="`+original+`"`)
+		ctx.File("./files/" + file)
+	}
+	Abort(http.StatusBadRequest, "File does not exist", ctx)
+	return
+}
+
 func FileSend(ctx *gin.Context) {
 	var req UploadRequest
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -75,13 +95,13 @@ func FilesList(ctx *gin.Context) {
 		noDot := strings.Replace(file.FileName, ".", "", -1)
 
 		html := fmt.Sprintf(`
-      <tr id="i%s">
+      <tr id="i%[1]s">
+        <td><a href="/../files/%[2]s" download="%[3]s">%[2]s</a></td>
+        <td>%[3]s</td>
         <td>%s</td>
-        <td>%s</td>
-        <td>%s</td>
-        <td><button hx-delete="/files/%s" hx-target="#i%s">Delete</button></td>
+        <td><button hx-delete="/files/%[2]s" hx-target="#i%[1]s">Delete</button></td>
       </tr>
-      `, noDot, file.FileName, file.Original, formatBytes(file.Size), file.FileName, noDot)
+      `, noDot, file.FileName, file.Original, formatBytes(file.Size))
 		templateList += html
 	}
 

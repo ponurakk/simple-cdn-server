@@ -45,7 +45,7 @@ func main() {
 
 	router := gin.Default()
 	router.MaxMultipartMemory = 8 << 20
-	router.Static("/files", "files")
+	router.GET("/files/:file", api.FileGet)
 	router.LoadHTMLGlob("templates/*")
 
 	router.GET("/", index(config))

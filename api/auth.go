@@ -38,7 +38,7 @@ func Login(config Config) gin.HandlerFunc {
 			return
 		}
 
-		expirationTime := time.Now().Add(5 * time.Minute)
+		expirationTime := time.Now().Add(10 * time.Minute)
 		claims := &Claims{
 			Token: creds.Token,
 			StandardClaims: jwt.StandardClaims{
