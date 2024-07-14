@@ -1,15 +1,79 @@
-<html>
+<html class="dark">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport"
     content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://unpkg.com/franken-ui-releases@0.0.13/dist/neutral.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.5/dist/js/uikit.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.5/dist/js/uikit-icons.min.js"></script>
   <title>CDN</title>
   <style>
-    body {
-      background-color: #1a1a1a;
-      color: white;
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 240 10% 3.9%;
+      --muted: 240 4.8% 95.9%;
+      --muted-foreground: 240 3.8% 46.1%;
+      --popover: 0 0% 100%;
+      --popover-foreground: 240 10% 3.9%;
+      --card: 0 0% 100%;
+      --card-foreground: 240 10% 3.9%;
+      --border: 240 5.9% 90%;
+      --input: 240 5.9% 90%;
+      --primary: 240 5.9% 10%;
+      --primary-foreground: 0 0% 98%;
+      --secondary: 240 4.8% 95.9%;
+      --secondary-foreground: 240 5.9% 10%;
+      --accent: 240 4.8% 95.9%;
+      --accent-foreground: 240 5.9% 10%;
+      --destructive: 0 84.2% 60.2%;
+      --destructive-foreground: 0 0% 98%;
+      --ring: 240 5.9% 10%;
+      --radius: 0.5rem;
+    }
+
+    .dark {
+      --background: 240 10% 3.9%;
+      --foreground: 0 0% 98%;
+      --muted: 240 3.7% 15.9%;
+      --muted-foreground: 240 5% 64.9%;
+      --popover: 240 10% 3.9%;
+      --popover-foreground: 0 0% 98%;
+      --card: 240 10% 3.9%;
+      --card-foreground: 0 0% 98%;
+      --border: 240 3.7% 15.9%;
+      --input: 240 3.7% 15.9%;
+      --primary: 0 0% 98%;
+      --primary-foreground: 240 5.9% 10%;
+      --secondary: 240 3.7% 15.9%;
+      --secondary-foreground: 0 0% 98%;
+      --accent: 240 3.7% 15.9%;
+      --accent-foreground: 0 0% 98%;
+      --destructive: 0 62.8% 30.6%;
+      --destructive-foreground: 0 0% 98%;
+      --ring: 240 4.9% 83.9%;
+    }
+
+    main {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    main>div {
+      min-width: 400px;
+      width: 30%;
+      margin: auto;
+    }
+
+    nav {
+      position: fixed !important;
+      width: 100vw;
+    }
+
+    nav *:first-of-type {
+      padding-left: 10px;
     }
 
     form * {
@@ -17,90 +81,83 @@
       margin: 10px;
     }
 
-    button,
-    #progressDiv,
-    progress,
-    progress+span {
-      display: inline-block;
-      vertical-align: middle;
+    #loginForm {
+      display: flex;
+      align-items: center;
+      justify-items: center;
     }
   </style>
 </head>
 
-<body>
-  <nav>
-    <a href="/list">List Files</a>
+<body class="bg-background text-foreground">
+  <nav class="uk-navbar-container" uk-navbar>
+    <div class="uk-navbar-left">
+      <ul class="uk-navbar-nav">
+        <li class="uk-active"><a href="/">Home</a></li>
+        <li><a href="/list">List</a></li>
+      </ul>
+    </div>
   </nav>
 
-  <p id="message">{{ .message }}</p>
+  <main>
+    <div class="uk-card uk-card-body">
+      {{ .form }}
 
-  {{ .form }}
+      <form enctype="multipart/form-data" id="uploadForm">
+        <div class="js-upload uk-placeholder uk-text-center">
+          <span uk-icon="icon: cloud-upload"></span>
+          <span class="uk-text-middle">Attach binaries by dropping them here or</span>
+          <div uk-form-custom>
+            <input type="file" multiple />
+            <span class="uk-link">selecting one</span>
+          </div>
+        </div>
 
-  <form enctype="multipart/form-data" id="uploadForm">
-    <input type="file" name="file" id="fileInput">
-    <button type="submit">Upload</button>
-    <div id="progressDiv">
-      <progress id="progressBar" value="0" max="100"></progress>
-      <span id="progressText">0%</span>
+        <div id="progressDiv">
+          <progress id="js-progressbar" class="uk-progress" value="0" max="100" hidden></progress>
+        </div>
+      </form>
     </div>
-  </form>
+  </main>
+
 </body>
 
 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
 <script>
-  document.getElementById("uploadForm").addEventListener("submit", (event) => {
-    event.preventDefault();
+  var bar = document.getElementById("js-progressbar");
 
-    const fileInput = document.getElementById("fileInput");
-    const progressBar = document.getElementById("progressBar");
-    const progressText = document.getElementById("progressText");
-    const messageDiv = document.getElementById("message");
+  UIkit.upload(".js-upload", {
+    url: "",
+    name: "file",
+    multiple: false,
+    type: "json",
 
-    if (fileInput.files.length === 0) {
-      alert("Please select a file.");
-      return;
-    }
+    loadStart: function (e) {
+      bar.removeAttribute("hidden");
+      bar.max = e.total;
+      bar.value = e.loaded;
+    },
 
-    const file = fileInput.files[0];
-    const formData = new FormData();
-    formData.append("file", file);
+    error: function () {
+      UIkit.notification({message: `Error: ${JSON.stringify(arguments[0].status)}`, pos: "top-right", status: "danger"})
+    },
 
-    const xhr = new XMLHttpRequest();
+    progress: function (e) {
+      bar.max = e.total;
+      bar.value = e.loaded;
+    },
 
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState == XMLHttpRequest.DONE) {
-        messageDiv.innerHTML += `${file.name}: ${JSON.parse(xhr.responseText).message}<br>`;
-      }
-    }
+    loadEnd: function (e) {
+      bar.max = e.total;
+      bar.value = 0;
+    },
 
-    xhr.upload.addEventListener("progress", (event) => {
-      if (event.lengthComputable) {
-        const percentComplete = (event.loaded / event.total) * 100;
-        progressBar.value = percentComplete;
-        progressBar.style.display = "inline-block";
-        progressText.innerHTML = `${Math.round(percentComplete)}%`;
-      }
-    });
+    completeAll: function () {
+      bar.setAttribute("hidden", "hidden");
 
-    xhr.upload.addEventListener("load", (event) => {
-      console.log("Upload complete!");
-      progressBar.value = 0;
-      progressText.innerHTML = "0%";
-      // Trigger HTMX swap to update the target element
-      htmx.trigger("#message", "htmx:afterSwap");
-    });
-
-    xhr.upload.addEventListener("error", (event) => {
-      alert("Upload failed.");
-    });
-
-    xhr.upload.addEventListener("abort", () => {
-      alert("Upload canceled.");
-    });
-
-    xhr.open("POST", "/");
-    xhr.send(formData);
+      UIkit.notification({message: "File uploaded", pos: "top-right", status: "primary"})
+    },
   });
 </script>
 

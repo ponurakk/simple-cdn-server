@@ -11,24 +11,25 @@ import (
 
 func index(config api.Config) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		data := `<form hx-post="/logout" hx-swap="outerHTML" hx-trigger="submit">
-      <button type="submit">Logout</button>
-      </form>`
+		data := `<form hx-post="/logout" hx-swap="outerHTML" hx-trigger="submit" class="uk-form-stacked" id="loginForm">
+    <input type="text" class="uk-input" placeholder="Token" name="token" value="******" disabled>
+    <button type="submit" class="uk-button uk-button-primary">Logout</button>
+    </form>`
 
 		tokenString, err := ctx.Cookie("jwt")
 		if err != nil {
-			data = `<form hx-post="/login" hx-swap="outerHTML" hx-trigger="submit">
-      <input type="text" placeholder="Token" name="token">
-      <button type="submit">Login</button>
+			data = `<form hx-post="/login" hx-swap="outerHTML" hx-trigger="submit" class="uk-form-stacked" id="loginForm">
+      <input type="text" class="uk-input" placeholder="Token" name="token">
+      <button type="submit" class="uk-button uk-button-primary">Login</button>
       </form>`
 		}
 
 		token, err := api.ValidateToken(config, tokenString)
 
 		if err != nil || !token.Valid {
-			data = `<form hx-post="/login" hx-swap="outerHTML" hx-trigger="submit">
-      <input type="text" placeholder="Token" name="token">
-      <button type="submit">Login</button>
+			data = `<form hx-post="/login" hx-swap="outerHTML" hx-trigger="submit" class="uk-form-stacked" id="loginForm">
+      <input type="text" class="uk-input" placeholder="Token" name="token">
+      <button type="submit" class="uk-button uk-button-primary">Login</button>
       </form>`
 		}
 

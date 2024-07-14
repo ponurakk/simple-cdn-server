@@ -4,7 +4,7 @@
 1. Rename **config.json.example** to **config.json**
 2. Set your token and address in **config.json** file
 3. Execute `go build`
-4. Run `./cdn-server`
+4. *nix: `./cdn-server` Windows: `.\cdn-server`
 
 # Endpoints
 Upload file:
@@ -23,3 +23,11 @@ DELETE /files/{generated combination}.{extension}
 ```
 
 #### All uploaded files go into the /files directory
+
+## Todo
+- [ ] Toggleable theme
+- [ ] Remove htmx
+- [ ] Add Dockerfile
+- [ ] Make files list sortable
+- [ ] Add sending multiple files
+- [ ] Implement Push cdn

@@ -95,12 +95,12 @@ func FilesList(ctx *gin.Context) {
 		noDot := strings.Replace(file.FileName, ".", "", -1)
 
 		html := fmt.Sprintf(`
-      <tr id="i%[1]s">
-        <td><a href="/../files/%[2]s" download="%[3]s">%[2]s</a></td>
-        <td>%[3]s</td>
-        <td>%s</td>
-        <td><button hx-delete="/files/%[2]s" hx-target="#i%[1]s">Delete</button></td>
-      </tr>
+    <tr id="i%[1]s">
+      <td><a href="/../files/%[2]s" download="%[3]s" class="uk-link">%[2]s</a></td>
+      <td>%[3]s</td>
+      <td>%s</td>
+      <td><button hx-delete="/files/%[2]s" hx-target="#i%[1]s" class="uk-button uk-button-danger">Delete</button></td>
+    </tr>
       `, noDot, file.FileName, file.Original, formatBytes(file.Size))
 		templateList += html
 	}

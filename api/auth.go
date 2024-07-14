@@ -57,9 +57,10 @@ func Login(config Config) gin.HandlerFunc {
 		c.SetCookie("jwt", tokenString, int(expirationTime.Unix()), "/", "", false, true)
 
 		c.String(http.StatusOK, `
-      <form hx-post="/logout" hx-swap="outerHTML" hx-trigger="submit">
-      <button type="submit">Logout</button>
-      </form>
+    <form hx-post="/logout" hx-swap="outerHTML" hx-trigger="submit" id="loginForm">
+      <input type="text" class="uk-input" placeholder="Token" name="token" value="******" disabled>
+      <button type="submit" class="uk-button uk-button-primary">Logout</button>
+    </form>
     `)
 	}
 }
@@ -69,10 +70,10 @@ func Logout(c *gin.Context) {
 	c.SetCookie("jwt", "", -1, "/", "", false, true)
 
 	c.String(http.StatusOK, `
-    <form hx-post="/login" hx-swap="outerHTML" hx-trigger="submit">
-    <input type="text" placeholder="Token" name="token">
-    <button type="submit">Login</button>
-    </form>
+  <form hx-post="/login" hx-swap="outerHTML" hx-trigger="submit" id="loginForm">
+    <input type="text" class="uk-input" placeholder="Token" name="token">
+    <button type="submit" class="uk-button uk-button-primary">Login</button>
+  </form>
   `)
 }
 
