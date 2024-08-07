@@ -17,6 +17,11 @@ Find file:
 GET /files/{generated combination}.{extension}
 ```
 
+View file:
+```http
+GET /files/v/{generated combination}.{extension}
+```
+
 Remove file:
 ```http
 DELETE /files/{generated combination}.{extension}

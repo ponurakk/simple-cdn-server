@@ -55,9 +55,21 @@ func FileGet(ctx *gin.Context) {
 
 		ctx.Header("Content-Disposition", `attachment; filename="`+original+`"`)
 		ctx.File("./files/" + file)
+		return
 	}
 	Abort(http.StatusBadRequest, "File does not exist", ctx)
-	return
+}
+
+func FileGetView(ctx *gin.Context) {
+	file := ctx.Param("file")
+	fmt.Println(file)
+
+	if _, err := os.Stat("./files/" + file); err == nil {
+		ctx.File("./files/" + file)
+		return
+	}
+
+	Abort(http.StatusBadRequest, "File does not exist", ctx)
 }
 
 func FileSend(ctx *gin.Context) {
