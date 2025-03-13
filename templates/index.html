@@ -117,6 +117,10 @@
           <progress id="js-progressbar" class="uk-progress" value="0" max="100" hidden></progress>
         </div>
       </form>
+
+      <div id="uploaded">
+        <h3>Uploaded files:</h3>
+      </div>
     </div>
   </main>
 
@@ -153,10 +157,12 @@
       bar.value = 0;
     },
 
-    completeAll: function () {
+    completeAll: function (e) {
       bar.setAttribute("hidden", "hidden");
 
       UIkit.notification({message: "File uploaded", pos: "top-right", status: "primary"})
+      let res = e.response.message.substring(40);
+      document.getElementById("uploaded").insertAdjacentHTML("beforeend", `<p>${res}</p>`);
     },
   });
 </script>
